@@ -1,0 +1,57 @@
+<div class="shared-page">
+
+    <header class="shared-header">
+        <div class="brand">📄 Doc Editor</div>
+        <div class="shared-badge">Shared Document</div>
+    </header>
+
+    <main class="shared-container">
+
+        <div *ngIf="loading" class="loading">
+            Loading document...
+        </div>
+
+        <div *ngIf="errorMessage" class="error">
+            {{ errorMessage }}
+        </div>
+
+        <div *ngIf="document && !loading" class="document-card">
+
+            <div class="document-top">
+
+                <input *ngIf="document.permission === 'Edit'" class="document-title" [(ngModel)]="document.title"
+                    placeholder="Document title" />
+
+                <h1 *ngIf="document.permission !== 'Edit'">
+                    {{ document.title }}
+                </h1>
+
+                <span class="permission-badge">
+                    {{ document.permission === 'Edit' ? 'Can edit' : 'View only' }}
+                </span>
+
+            </div>
+
+            <div class="document-info">
+                Permission: <strong>{{ document.permission }}</strong>
+            </div>
+
+            <hr>
+
+            <div #editor class="document-content"
+                [attr.contenteditable]="document.permission === 'Edit' ? 'true' : 'false'" (input)="onContentInput()">
+            </div>
+
+            <div *ngIf="document.permission === 'Edit'" class="editor-actions">
+                <span>{{ saveStatus }}</span>
+
+                <button (click)="saveDocument()" [disabled]="saveStatus === 'Saving...'">
+                    Save Changes
+                </button>
+            </div>
+
+        </div>
+
+    </main>
+
+</div>

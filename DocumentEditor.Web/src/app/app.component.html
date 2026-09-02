@@ -1,0 +1,293 @@
+<div class="app-container">
+
+  <!-- ================= TOP HEADER ================= -->
+
+  <header class="topbar">
+
+    <div class="brand">
+
+      <span class="brand-icon">
+        📄
+      </span>
+
+      <div class="brand-text">
+        <strong>Doc Editor</strong>
+        <small>Workspace</small>
+      </div>
+
+    </div>
+
+
+    <div class="document-title">
+
+      <input type="text" [(ngModel)]="documentTitle" placeholder="Untitled document" (blur)="saveDocument()" />
+
+    </div>
+
+
+    <div class="header-actions">
+
+      <span class="save-status" [class.saving]="saveStatus === 'Saving...'">
+        {{ saveStatus }}
+      </span>
+
+      <button class="share-btn" (click)="openShareModal()" [disabled]="!selectedDocumentId">
+        <span>↗</span>
+        Share
+      </button>
+
+    </div>
+
+  </header>
+
+
+  <!-- ================= MAIN AREA ================= -->
+
+  <div class="main-area">
+
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar">
+
+      <button class="new-document-btn" (click)="createNewDocument()">
+        <span>＋</span>
+        New Document
+      </button>
+
+
+      <div class="sidebar-heading">
+
+        <h3>My Documents</h3>
+
+        <span class="document-count">
+          {{ documents.length }}
+        </span>
+
+      </div>
+
+
+      <div class="document-list">
+
+        <div class="document-item" *ngFor="let document of documents" [class.active]="
+            document.id === selectedDocumentId
+          " (click)="selectDocument(document)">
+
+          <span class="document-icon">
+            📄
+          </span>
+
+
+          <div class="document-info">
+
+            <strong>
+              {{ document.title }}
+            </strong>
+
+            <small>
+              {{ document.updatedAt | date:'MMM d, h:mm a' }}
+            </small>
+
+          </div>
+
+
+          <!-- DELETE BUTTON -->
+
+          <button class="delete-btn" title="Delete document" (click)="
+              deleteDocument(document);
+              $event.stopPropagation()
+            ">
+            🗑
+          </button>
+
+        </div>
+
+
+        <!-- EMPTY STATE -->
+
+        <div class="empty-documents" *ngIf="documents.length === 0">
+
+          <div class="empty-icon">
+            📄
+          </div>
+
+          <strong>No documents yet</strong>
+
+          <small>
+            Create your first document
+          </small>
+
+        </div>
+
+      </div>
+
+    </aside>
+
+
+    <!-- ================= EDITOR ================= -->
+
+    <main class="editor-area">
+
+
+      <!-- TOOLBAR -->
+
+      <div class="toolbar">
+
+        <button (click)="formatText('bold')" title="Bold">
+          <strong>B</strong>
+        </button>
+
+
+        <button (click)="formatText('italic')" title="Italic">
+          <em>I</em>
+        </button>
+
+
+        <button (click)="formatText('underline')" title="Underline">
+          <u>U</u>
+        </button>
+
+
+        <div class="toolbar-divider"></div>
+
+
+        <select (change)="formatHeading($event)" title="Text style">
+
+          <option value="">
+            Normal text
+          </option>
+
+          <option value="h1">
+            Heading 1
+          </option>
+
+          <option value="h2">
+            Heading 2
+          </option>
+
+          <option value="h3">
+            Heading 3
+          </option>
+
+        </select>
+
+
+        <div class="toolbar-divider"></div>
+
+
+        <button (click)="formatText('insertUnorderedList')" title="Bullet list">
+          ☷
+        </button>
+
+
+        <button (click)="formatText('insertOrderedList')" title="Numbered list">
+          ≡
+        </button>
+
+      </div>
+
+
+      <!-- DOCUMENT PAPER -->
+
+      <div #editor class="editor" contenteditable="true" (input)="onEditorInput()" spellcheck="true"></div>
+
+      <!-- ================= SHARE MODAL ================= -->
+
+      <div class="modal-backdrop" *ngIf="showShareModal">
+
+        <div class="share-modal">
+
+
+          <div class="modal-header">
+
+            <div>
+
+              <h2>
+                Share document
+              </h2>
+
+              <p>
+                Give someone access to this document.
+              </p>
+
+            </div>
+
+
+            <button class="close-btn" (click)="closeShareModal()">
+              ×
+            </button>
+
+          </div>
+
+
+          <label>
+            Email address
+          </label>
+
+
+          <input type="email" [(ngModel)]="shareEmail" placeholder="person@example.com" />
+
+
+          <label>
+            Permission
+          </label>
+
+
+          <select [(ngModel)]="sharePermission">
+
+            <option value="View">
+              Can view
+            </option>
+
+            <option value="Edit">
+              Can edit
+            </option>
+
+          </select>
+
+
+          <button class="generate-btn" (click)="generateShareLink()">
+
+            Generate Share Link
+
+          </button>
+
+
+          <div class="share-result" *ngIf="shareUrl">
+
+            <div class="success-icon">
+              ✓
+            </div>
+
+            <div>
+
+              <strong>
+                Share link created
+              </strong>
+
+              <small>
+                Send this link to the person.
+              </small>
+
+            </div>
+
+
+            <div class="share-link">
+
+              <input [value]="shareUrl" readonly />
+
+
+              <button (click)="copyShareLink()">
+                Copy
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <router-outlet></router-outlet>
