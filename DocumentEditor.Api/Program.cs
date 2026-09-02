@@ -10,7 +10,10 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAngular", policy =>
     {
         policy
-            .WithOrigins("http://localhost:4200")
+            .WithOrigins(
+                "http://localhost:4200",
+                "https://ajaia-document-editor-web.onrender.com"
+            )
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -31,8 +34,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowAngular");
-
-app.UseHttpsRedirection();
+if (app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 app.MapControllers();
 
